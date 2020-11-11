@@ -6,6 +6,10 @@ class PDOXpress extends \PDO {
 
     private ?\PDOStatement $statement;
 
+    /**
+     * pdo constructor
+     * more information at https://www.php.net/manual/de/pdo.construct.php
+     */
     public function __construct(string $dsn, string $username = '', string $passwd = '', array $options = [])
     {
         parent::__construct($dsn, $username, $passwd, $options);
@@ -27,6 +31,11 @@ class PDOXpress extends \PDO {
         return $this->statement->execute($params);
     }
 
+    /**
+     * fetch one record from a select query as assoc array
+     * @param bool (optional) $htmlspecialchars set true to encode htmlspecialchars on non numeric values
+     * @return Array|NULL
+     */
     public function fetch(bool $htmlspecialchars = false)
 	{
         if (!$this->statement)
@@ -40,6 +49,11 @@ class PDOXpress extends \PDO {
         return $result;
     }
 
+    /**
+     * fetch all records from a select query at once as assoc array
+     * @param bool (optional) $htmlspecialchars set true to encode htmlspecialchars on non numeric values
+     * @return Array|NULL
+     */
     public function fetchAll(bool $htmlspecialchars = false)
 	{
         if (!$this->statement)
@@ -54,6 +68,11 @@ class PDOXpress extends \PDO {
         return $result;
     }
 
+    /**
+     * fetch one record from a select query as object
+     * @param bool (optional) $htmlspecialchars set true to encode htmlspecialchars on non numeric values
+     * @return Object|NULL
+     */
     public function fetchObject(bool $htmlspecialchars = false)
     {
         if (!$this->statement)
@@ -67,6 +86,11 @@ class PDOXpress extends \PDO {
         return $result;
     }
 
+    /**
+     * fetch all records from a select query at once as array of objects
+     * @param bool (optional) $htmlspecialchars set true to encode htmlspecialchars on non numeric values
+     * @return Object|NULL
+     */
     public function fetchAllObject(bool $htmlspecialchars = false)
     {
         if (!$this->statement)
@@ -135,7 +159,7 @@ class PDOXpress extends \PDO {
     }
 
     /**
-     * delete a record from a table
+     * select one or more records from a table
      * @param string $table table name
      * @param array $arguments (optional) column => value pair assoc array for select arguments
      * @param array $columns (optional) column names for the select
@@ -161,12 +185,28 @@ class PDOXpress extends \PDO {
         return $this->query($sql, $params);
     }
 
+    /**
+     * select one or more records from a table and directly fetch to assoc array
+     * @param string $table table name
+     * @param array $arguments (optional) column => value pair assoc array for select arguments
+     * @param array $columns (optional) column names for the select
+     * @param bool (optional) $htmlspecialchars set true to encode htmlspecialchars on non numeric values
+     * @return Array|NULL
+     */
     public function selectFetchAll(string $table, array $arguments = [], array $columns = [], bool $htmlspecialchars = false)
     {
         $this->select($table, $arguments, $columns);
         return $this->fetchAll($htmlspecialchars);
     }
 
+    /**
+     * select one or more records from a table and directly fetch to array of objects
+     * @param string $table table name
+     * @param array $arguments (optional) column => value pair assoc array for select arguments
+     * @param array $columns (optional) column names for the select
+     * @param bool (optional) $htmlspecialchars set true to encode htmlspecialchars on non numeric values
+     * @return Array|NULL
+     */
     public function selectFetchAllObject(string $table, array $arguments = [], array $columns = [], bool $htmlspecialchars = false)
     {
         $this->select($table, $arguments, $columns);

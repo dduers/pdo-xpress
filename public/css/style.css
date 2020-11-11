@@ -24,11 +24,7 @@ table {
 input,
 textarea {
     width: 100%;
-    box-sizing: border-box; /* CSS 3 rec */
-    -moz-box-sizing: border-box; /* Firefox 2 */
-    -ms-box-sizing: border-box; /* Internet Explorer 8 */
-    -webkit-box-sizing: border-box; /* Safari 3 */
-    -khtml-box-sizing: border-box; /* Konqueror */
+    box-sizing: border-box;
     padding: 5px;
     margin-bottom:15px;
     border-radius:0;
@@ -42,15 +38,9 @@ textarea {
 }
 
 button {
-    padding: 15px;
+    padding: 10px;
     border:1px solid grey;
     background-color:lightgrey;
-}
-
-form {
-    padding:30px;
-    /*border:1px solid gold;*/
-    background-color:lightyellow;
 }
 
 label {
@@ -61,9 +51,5 @@ label {
     border-top: 1px solid grey;
     border-left: 1px solid grey;
     border-right: 1px solid grey;
-    box-sizing: border-box; /* CSS 3 rec */
-    -moz-box-sizing: border-box; /* Firefox 2 */
-    -ms-box-sizing: border-box; /* Internet Explorer 8 */
-    -webkit-box-sizing: border-box; /* Safari 3 */
-    -khtml-box-sizing: border-box; /* Konqueror */
+    box-sizing: border-box;
 }

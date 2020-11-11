@@ -22,8 +22,8 @@
             </form>
             <?php
                 echo '<table>';
-                $PDOx->select('pdo_test');
-                foreach ($PDOx->fetchAllObject(true) as $row) {
+                //$PDOx->select('pdo_test');
+                foreach ($PDOx->selectFetchAllObject('pdo_test', [], [], true) as $row) {
                     /*echo 
                     '<tr>'.
                         '<td>'.$row['id'].'</td>'.
