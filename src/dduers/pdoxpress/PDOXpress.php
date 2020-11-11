@@ -118,7 +118,7 @@ class PDOXpress extends \PDO {
         $params = [];
         foreach ($data as $key => $value)
             $params[":".$key] = $stripTags ? strip_tags($value) : $value;
-        $sql = "INSERT INTO `$table` (".implode(',', array_keys($data)).") VALUES (".implode(',', array_keys($params)).")";
+        $sql = "INSERT INTO `$table` (".implode(",", array_keys($data)).") VALUES (".implode(",", array_keys($params)).")";
         $result = $this->query($sql, $params);
         $insertId = $this->lastInsertId();
         return $result;
@@ -134,14 +134,14 @@ class PDOXpress extends \PDO {
      */
     public function update(string $table, array $data, int $recordId, string $recordIdColumn = 'id', bool $stripTags = false) : bool
     {
-        $sql = '';
+        $sql = "";
         $sql_parts = [];
         $params = [];
         foreach ($data as $key => $value) {
             $params[":".$key] = $stripTags ? strip_tags($value) : $value;
             $sql_parts[] = "`$key`=:$key";
         }
-        $sql = "UPDATE `$table` SET ".implode(',', $sql_parts)." WHERE `$recordIdColumn`=$recordId";
+        $sql = "UPDATE `$table` SET ".implode(",", $sql_parts)." WHERE `$recordIdColumn`=$recordId";
         return $this->query($sql, $params);
     }
 
@@ -152,7 +152,7 @@ class PDOXpress extends \PDO {
      * @param string $recordIdColumn (optional) name of the id column
      * @return bool true on success
      */
-    public function delete(string $table, int $recordId, string $recordIdColumn = 'id') : bool
+    public function delete(string $table, int $recordId, string $recordIdColumn = "id") : bool
     {
         $sql = "DELETE FROM `$table` WHERE `$recordIdColumn`=$recordId";
         return $this->query($sql);
@@ -167,21 +167,21 @@ class PDOXpress extends \PDO {
      */
     public function select(string $table, array $arguments = [], array $columns = []) : bool
     {
-        $sql = '';
+        $sql = "";
         $params = [];
         $sql_columns = [];
         $sql_arguments = [];
         if ($columns)
             foreach($columns as $column)
                 $sql_columns[] = "`$column`";
-        else $sql_columns[] = '*';
+        else $sql_columns[] = "*";
         if ($arguments)
             foreach($arguments as $column => $value) {
-                $params[':'.$column] = $value;
+                $params[":".$column] = $value;
                 $sql_arguments[] = "`$column`=:$column";
             }
-        else $sql_arguments[] = '1';
-        $sql = "SELECT ".implode(',', $sql_columns)." FROM `$table` WHERE ".implode(' AND ', $sql_arguments);
+        else $sql_arguments[] = "1";
+        $sql = "SELECT ".implode(",", $sql_columns)." FROM `$table` WHERE ".implode(" AND ", $sql_arguments);
         return $this->query($sql, $params);
     }
 
