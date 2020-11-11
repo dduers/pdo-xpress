@@ -6,7 +6,7 @@ $PDOx = new \Dduers\PDOXpress\PDOXpress(DB_CONN, DB_USER, DB_PASS);
 
 if (isset($_POST['Create'])) {
     unset($_POST['Create']);
-    $PDOx->insert('pdo_test', $_POST);
+    $PDOx->insert('pdo_test', $_POST, true);
     //exit($PDOx->lastInsertId());
     header('Location: ./');
     exit();
@@ -15,7 +15,7 @@ if (isset($_POST['Create'])) {
 if (isset($_POST['Update'])) {
     if (isset($_GET['id']) && is_numeric($_GET['id'])) {
         unset($_POST['Update']);
-        $PDOx->update('pdo_test', $_POST, $_GET['id']);
+        $PDOx->update('pdo_test', $_POST, $_GET['id'], 'id', true);
     }
     header('Location: ./');
     exit();

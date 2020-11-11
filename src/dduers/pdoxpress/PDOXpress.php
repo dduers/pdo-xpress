@@ -6,9 +6,9 @@ class PDOXpress extends \PDO {
 
     private ?\PDOStatement $statement;
 
-    public function __construct(string $connection, string $user = '', string $password = '', array $options = [])
+    public function __construct(string $dsn, string $username = '', string $passwd = '', array $options = [])
     {
-        parent::__construct($connection, $user, $password);
+        parent::__construct($dsn, $username, $passwd, $options);
         if (empty($options)) {
             $this->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
             $this->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
@@ -74,12 +74,12 @@ class PDOXpress extends \PDO {
      * @param reference &$insertId will be filled with the record id
      * @return bool true on success
      */
-    public function insert(string $table, array $data, &$insertId = NULL) : bool
+    public function insert(string $table, array $data, $stripTags = false) : bool
     {
         $sql = "";
         $params = [];
         foreach ($data as $key => $value)
-            $params[":".$key] = $value;
+            $params[":".$key] = $stripTags ? strip_tags($value) : $value;
         $sql = "INSERT INTO `$table` (".implode(',', array_keys($data)).") VALUES (".implode(',', array_keys($params)).")";
         $result = $this->query($sql, $params);
         $insertId = $this->lastInsertId();
@@ -94,13 +94,13 @@ class PDOXpress extends \PDO {
      * @param string $recordIdColumn (optional) name of the id column
      * @return bool true on success
      */
-    public function update(string $table, array $data, int $recordId, string $recordIdColumn = 'id') : bool
+    public function update(string $table, array $data, int $recordId, string $recordIdColumn = 'id', $stripTags = false) : bool
     {
         $sql = '';
         $sql_parts = [];
         $params = [];
         foreach ($data as $key => $value) {
-            $params[':'.$key] = $value;
+            $params[":".$key] = $stripTags ? strip_tags($value) : $value;
             $sql_parts[] = "`$key`=:$key";
         }
         $sql = "UPDATE `$table` SET ".implode(',', $sql_parts)." WHERE `$recordIdColumn`=$recordId";
