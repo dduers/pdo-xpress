@@ -2,7 +2,7 @@
 <html>
     <head>
         <title>PDO Test Drive</title>
-        <link rel="stylesheet" href="./css/style.css">
+        <link rel="stylesheet" href="css/style.css">
         <base href="/">
     </head>
     <body>
@@ -21,9 +21,8 @@
                 <?php } ?>
             </form>
             <?php
-                $pdoMySql->select('pdo_test');
                 echo '<table>';
-                foreach ($pdoMySql->fetchAllObject() as $row) {
+                foreach ($pdoMySql->selectFetchAllObject('pdo_test') as $row) {
                     echo '<tr>';
                     echo 
                         '<td>'.$row->id.'</td>'.

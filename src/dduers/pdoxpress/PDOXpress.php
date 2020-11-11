@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
-namespace Dduers\PDOMySql;
+namespace Dduers\PDOXpress;
 
-class PDOMySql extends \PDO {
+class PDOXpress extends \PDO {
 
     private $statement;
 
@@ -100,5 +100,15 @@ class PDOMySql extends \PDO {
         else $sql_arguments[] = '1';
         $sql = "SELECT ".implode(',', $sql_columns)." FROM `$table` WHERE ".implode(' AND ', $sql_arguments);
         return $this->query($sql, $params);
+    }
+
+    public function selectFetchAll(string $table, array $arguments = [], array $columns = []) {
+        $this->select($table, $arguments, $columns);
+        return $this->fetch();
+    }
+
+    public function selectFetchAllObject(string $table, array $arguments = [], array $columns = []) {
+        $this->select($table, $arguments, $columns);
+        return $this->fetchAllObject();
     }
 }

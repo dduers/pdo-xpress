@@ -1,8 +1,8 @@
 <?php
-include '../src/dduers/pdomysql/PDOMySql.php';
+include '../src/dduers/pdoxpress/PDOXpress.php';
 include '../config/config.php';
 
-$pdoMySql = new \Dduers\PDOMySql\PDOMySql(DB_CONN, DB_USER, DB_PASS/*, [
+$pdoMySql = new \Dduers\PDOXpress\PDOXpress(DB_CONN, DB_USER, DB_PASS/*, [
     \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
     \PDO::ATTR_EMULATE_PREPARES => false, 
 ]*/);
