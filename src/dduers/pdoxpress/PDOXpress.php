@@ -4,7 +4,7 @@ namespace Dduers\PDOXpress;
 
 class PDOXpress extends \PDO {
 
-    private $statement;
+    private ?\PDOStatement $statement;
 
     public function __construct(string $connection, string $user = '', string $password = '', array $options = [])
     {
@@ -23,25 +23,33 @@ class PDOXpress extends \PDO {
 
     public function fetch()
 	{
+        if (!$this->statement)
+            return NULL;
         return $this->statement->fetch(\PDO::FETCH_ASSOC);
     }
 
     public function fetchAll()
 	{
+        if (!$this->statement)
+            return NULL;
         return $this->statement->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     public function fetchObject()
     {
+        if (!$this->statement)
+            return NULL;
         return $this->statement->fetch(\PDO::FETCH_OBJ);
     }
 
     public function fetchAllObject()
     {
+        if (!$this->statement)
+            return NULL;
         return $this->statement->fetchAll(\PDO::FETCH_OBJ);
     }
 
-    public function insert(string $table, array $data, &$insertId) : bool
+    public function insert(string $table, array $data, &$insertId = NULL) : bool
     {
         $sql = "";
         $params = [];

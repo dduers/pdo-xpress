@@ -2,14 +2,12 @@
 include '../src/dduers/pdoxpress/PDOXpress.php';
 include '../config/config.php';
 
-$pdoMySql = new \Dduers\PDOXpress\PDOXpress(DB_CONN, DB_USER, DB_PASS/*, [
-    \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
-    \PDO::ATTR_EMULATE_PREPARES => false, 
-]*/);
+$pdoMySql = new \Dduers\PDOXpress\PDOXpress(DB_CONN, DB_USER, DB_PASS);
 
 if (isset($_POST['Create'])) {
     unset($_POST['Create']);
-    $pdoMySql->insert('pdo_test', $_POST, $insertid);
+    $pdoMySql->insert('pdo_test', $_POST);
+    //exit($pdoMySql->lastInsertId());
     header('Location: ./');
     exit();
 }
