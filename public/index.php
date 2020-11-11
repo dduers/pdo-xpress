@@ -9,7 +9,7 @@ $pdoMySql = new \Dduers\PDOXpress\PDOXpress(DB_CONN, DB_USER, DB_PASS/*, [
 
 if (isset($_POST['Create'])) {
     unset($_POST['Create']);
-    $pdoMySql->insert('pdo_test', $_POST);
+    $pdoMySql->insert('pdo_test', $_POST, $insertid);
     header('Location: ./');
     exit();
 }

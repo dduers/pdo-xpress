@@ -15,7 +15,7 @@ class PDOXpress extends \PDO {
         }
     }
 
-    public function query(string $sql, array $params = [])
+    public function query(string $sql, array $params = []) : bool
     {
         $this->statement = $this->prepare($sql);
         return $this->statement->execute($params);
@@ -41,14 +41,16 @@ class PDOXpress extends \PDO {
         return $this->statement->fetchAll(\PDO::FETCH_OBJ);
     }
 
-    public function insert(string $table, array $data)
+    public function insert(string $table, array $data, &$insertId) : bool
     {
         $sql = "";
         $params = [];
         foreach ($data as $key => $value)
             $params[":".$key] = $value;
         $sql = "INSERT INTO `$table` (".implode(',', array_keys($data)).") VALUES (".implode(',', array_keys($params)).")";
-        return $this->query($sql, $params);
+        $result = $this->query($sql, $params);
+        $insertId = $this->lastInsertId();
+        return $result;
     }
 
     /**
@@ -58,7 +60,7 @@ class PDOXpress extends \PDO {
      * @param int $recordId id of the record
      * @param string $recordIdColumn (optional) name of the id column
      */
-    public function update(string $table, array $data, int $recordId, string $recordIdColumn = 'id')
+    public function update(string $table, array $data, int $recordId, string $recordIdColumn = 'id') : bool
     {
         $sql = '';
         $sql_parts = [];
@@ -77,13 +79,14 @@ class PDOXpress extends \PDO {
      * @param int $recordId id of the record
      * @param string $recordIdColumn (optional) name of the id column
      */
-    public function delete(string $table, int $recordId, string $recordIdColumn = 'id')
+    public function delete(string $table, int $recordId, string $recordIdColumn = 'id') : bool
     {
         $sql = "DELETE FROM `$table` WHERE `$recordIdColumn`=$recordId";
         return $this->query($sql);
     }
 
-    public function select(string $table, array $arguments = [], array $columns = []) {
+    public function select(string $table, array $arguments = [], array $columns = []) : bool
+    {
         $sql = '';
         $params = [];
         $sql_columns = [];
