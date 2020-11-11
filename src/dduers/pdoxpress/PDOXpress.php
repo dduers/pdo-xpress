@@ -15,17 +15,29 @@ class PDOXpress extends \PDO {
         }
     }
 
+    /**
+     * make an sql query
+     * @param string $sql the sql query
+     * @param array (optional) $params params, if the sql query contains placeholders
+     * @return bool true on success
+     */
     public function query(string $sql, array $params = []) : bool
     {
         $this->statement = $this->prepare($sql);
         return $this->statement->execute($params);
     }
 
-    public function fetch()
+    public function fetch(bool $htmlspecialchars = false)
 	{
         if (!$this->statement)
             return NULL;
-        return $this->statement->fetch(\PDO::FETCH_ASSOC);
+        if (!($result = $this->statement->fetch(\PDO::FETCH_ASSOC)))
+            return NULL;
+        if ($htmlspecialchars)
+            foreach ($result as $key => $value)
+                if (!is_numeric($value))
+                    $result[$key] = htmlspecialchars($value);
+        return $result;
     }
 
     public function fetchAll()
@@ -35,11 +47,17 @@ class PDOXpress extends \PDO {
         return $this->statement->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    public function fetchObject()
+    public function fetchObject(bool $htmlspecialchars = false)
     {
         if (!$this->statement)
             return NULL;
-        return $this->statement->fetch(\PDO::FETCH_OBJ);
+        if (!($result = $this->statement->fetch(\PDO::FETCH_OBJ)))
+            return NULL;
+        if ($htmlspecialchars)
+            foreach ($result as $key => $value)
+                if (!is_numeric($value))
+                    $result->$key = htmlspecialchars($value);
+        return $result;
     }
 
     public function fetchAllObject()
@@ -49,6 +67,13 @@ class PDOXpress extends \PDO {
         return $this->statement->fetchAll(\PDO::FETCH_OBJ);
     }
 
+    /**
+     * insert a record to a table
+     * @param string $table table name
+     * @param array $data data for the record
+     * @param reference &$insertId will be filled with the record id
+     * @return bool true on success
+     */
     public function insert(string $table, array $data, &$insertId = NULL) : bool
     {
         $sql = "";
@@ -67,6 +92,7 @@ class PDOXpress extends \PDO {
      * @param array $data new data for the record
      * @param int $recordId id of the record
      * @param string $recordIdColumn (optional) name of the id column
+     * @return bool true on success
      */
     public function update(string $table, array $data, int $recordId, string $recordIdColumn = 'id') : bool
     {
@@ -86,6 +112,7 @@ class PDOXpress extends \PDO {
      * @param string $table table name
      * @param int $recordId id of the record
      * @param string $recordIdColumn (optional) name of the id column
+     * @return bool true on success
      */
     public function delete(string $table, int $recordId, string $recordIdColumn = 'id') : bool
     {
@@ -93,6 +120,13 @@ class PDOXpress extends \PDO {
         return $this->query($sql);
     }
 
+    /**
+     * delete a record from a table
+     * @param string $table table name
+     * @param array $arguments (optional) column => value pair assoc array for select arguments
+     * @param array $columns (optional) column names for the select
+     * @return bool true on success
+     */
     public function select(string $table, array $arguments = [], array $columns = []) : bool
     {
         $sql = '';
@@ -113,12 +147,14 @@ class PDOXpress extends \PDO {
         return $this->query($sql, $params);
     }
 
-    public function selectFetchAll(string $table, array $arguments = [], array $columns = []) {
+    public function selectFetchAll(string $table, array $arguments = [], array $columns = []) 
+    {
         $this->select($table, $arguments, $columns);
-        return $this->fetch();
+        return $this->fetchAll();
     }
 
-    public function selectFetchAllObject(string $table, array $arguments = [], array $columns = []) {
+    public function selectFetchAllObject(string $table, array $arguments = [], array $columns = []) 
+    {
         $this->select($table, $arguments, $columns);
         return $this->fetchAllObject();
     }
