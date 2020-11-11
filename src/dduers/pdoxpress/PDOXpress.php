@@ -40,11 +40,18 @@ class PDOXpress extends \PDO {
         return $result;
     }
 
-    public function fetchAll()
+    public function fetchAll(bool $htmlspecialchars = false)
 	{
         if (!$this->statement)
             return NULL;
-        return $this->statement->fetchAll(\PDO::FETCH_ASSOC);
+        if (!($result = $this->statement->fetchAll(\PDO::FETCH_ASSOC)))
+            return NULL;
+        if ($htmlspecialchars)
+            foreach ($result as $key => $value)
+                foreach ($value as $column => $content)
+                    if (!is_numeric($content))
+                        $result[$key][$column] = htmlspecialchars($content);
+        return $result;
     }
 
     public function fetchObject(bool $htmlspecialchars = false)
@@ -60,11 +67,18 @@ class PDOXpress extends \PDO {
         return $result;
     }
 
-    public function fetchAllObject()
+    public function fetchAllObject(bool $htmlspecialchars = false)
     {
         if (!$this->statement)
             return NULL;
-        return $this->statement->fetchAll(\PDO::FETCH_OBJ);
+        if (!($result = $this->statement->fetchAll(\PDO::FETCH_OBJ)))
+            return NULL;
+        if ($htmlspecialchars)
+            foreach ($result as $key => $value)
+                foreach ($value as $column => $content)
+                    if (!is_numeric($content))
+                        $result[$key]->$column = htmlspecialchars($content);
+        return $result;
     }
 
     /**
@@ -74,7 +88,7 @@ class PDOXpress extends \PDO {
      * @param reference &$insertId will be filled with the record id
      * @return bool true on success
      */
-    public function insert(string $table, array $data, $stripTags = false) : bool
+    public function insert(string $table, array $data, bool $stripTags = false) : bool
     {
         $sql = "";
         $params = [];
@@ -94,7 +108,7 @@ class PDOXpress extends \PDO {
      * @param string $recordIdColumn (optional) name of the id column
      * @return bool true on success
      */
-    public function update(string $table, array $data, int $recordId, string $recordIdColumn = 'id', $stripTags = false) : bool
+    public function update(string $table, array $data, int $recordId, string $recordIdColumn = 'id', bool $stripTags = false) : bool
     {
         $sql = '';
         $sql_parts = [];
@@ -147,15 +161,15 @@ class PDOXpress extends \PDO {
         return $this->query($sql, $params);
     }
 
-    public function selectFetchAll(string $table, array $arguments = [], array $columns = []) 
+    public function selectFetchAll(string $table, array $arguments = [], array $columns = [], bool $htmlspecialchars = false)
     {
         $this->select($table, $arguments, $columns);
-        return $this->fetchAll();
+        return $this->fetchAll($htmlspecialchars);
     }
 
-    public function selectFetchAllObject(string $table, array $arguments = [], array $columns = []) 
+    public function selectFetchAllObject(string $table, array $arguments = [], array $columns = [], bool $htmlspecialchars = false)
     {
         $this->select($table, $arguments, $columns);
-        return $this->fetchAllObject();
+        return $this->fetchAllObject($htmlspecialchars);
     }
 }

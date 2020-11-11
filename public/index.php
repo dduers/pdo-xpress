@@ -15,7 +15,7 @@ if (isset($_POST['Create'])) {
 if (isset($_POST['Update'])) {
     if (isset($_GET['id']) && is_numeric($_GET['id'])) {
         unset($_POST['Update']);
-        $PDOx->update('pdo_test', $_POST, $_GET['id'], 'id', true);
+        $PDOx->update('pdo_test', $_POST, $_GET['id'], 'id', false);
     }
     header('Location: ./');
     exit();

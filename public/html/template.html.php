@@ -22,7 +22,15 @@
             </form>
             <?php
                 echo '<table>';
-                foreach ($PDOx->selectFetchAllObject('pdo_test') as $row) {
+                $PDOx->select('pdo_test');
+                foreach ($PDOx->fetchAllObject(true) as $row) {
+                    /*echo 
+                    '<tr>'.
+                        '<td>'.$row['id'].'</td>'.
+                        '<td><a href="?id='.$row['id'].'">'.$row['title'].'</a></td>'.
+                        '<td>'.$row['text'].'</td>'.
+                        '<td>'.$row['number'].'</td>'.
+                    '</tr>';*/
                     echo 
                     '<tr>'.
                         '<td>'.$row->id.'</td>'.
