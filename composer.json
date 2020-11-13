@@ -1,0 +1,18 @@
+{
+    "name": "dduers/pdoxpress",
+    "description": "Extension classes for PHP's PDO class with convinience methods",
+    "type": "library",
+    "homepage": "http://www.xsite.ch",
+    "require": {
+        "php": "^7.4"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Daniel Duersteler",
+            "email": "daniel.duersteler@gmail.com",
+            "role": "Developer",
+            "homepage": "http://www.xsite.ch"
+        }
+    ]
+}
