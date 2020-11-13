@@ -10,7 +10,12 @@ class PDOXpress extends \PDO {
      * pdo constructor
      * more information at https://www.php.net/manual/de/pdo.construct.php
      */
-    public function __construct(string $dsn, string $username = '', string $passwd = '', array $options = [])
+    public function __construct(
+        string $dsn,
+        string $username = '',
+        string $passwd = '',
+        array $options = []
+    )
     {
         parent::__construct($dsn, $username, $passwd, $options);
         if (empty($options)) {
@@ -23,12 +28,21 @@ class PDOXpress extends \PDO {
      * make an sql query
      * @param string $sql the sql query
      * @param array (optional) $params params, if the sql query contains placeholders
+     * @param int (optional) $attrCase the case of the column names in the result, will be reset after the query
      * @return bool true on success
      */
-    public function query(string $sql, array $params = []) : bool
+    public function query(
+        string $sql,
+        array $params = [],
+        int $attrCase = \PDO::CASE_NATURAL
+    ) : bool
     {
+        $backupAttrCase = $this->getAttribute(\PDO::ATTR_CASE);
+        $this->setAttribute(\PDO::ATTR_CASE, $attrCase);
         $this->statement = $this->prepare($sql);
-        return $this->statement->execute($params);
+        $result = $this->statement->execute($params);
+        $this->setAttribute(\PDO::ATTR_CASE, $backupAttrCase);
+        return $result;
     }
 
     /**
@@ -37,16 +51,16 @@ class PDOXpress extends \PDO {
      * @return Array|NULL
      */
     public function fetch(bool $htmlspecialchars = false)
-	{
-        if (!$this->statement)
+    {
+        if (!$this->statement || !($record = $this->statement->fetch(\PDO::FETCH_ASSOC)))
             return NULL;
-        if (!($result = $this->statement->fetch(\PDO::FETCH_ASSOC)))
-            return NULL;
-        if ($htmlspecialchars)
-            foreach ($result as $key => $value)
-                if (!is_numeric($value))
-                    $result[$key] = htmlspecialchars($value);
-        return $result;
+        if (true === $htmlspecialchars)
+            foreach ($record as $column => $content)
+                $record[$column] =
+                    is_null($content) || is_numeric($content)
+                        ? $content
+                        : htmlspecialchars($content, ENT_QUOTES);
+        return $record;
     }
 
     /**
@@ -55,16 +69,16 @@ class PDOXpress extends \PDO {
      * @return Array|NULL
      */
     public function fetchAll(bool $htmlspecialchars = false)
-	{
-        if (!$this->statement)
+    {
+        if (!$this->statement || !($result = $this->statement->fetchAll(\PDO::FETCH_ASSOC)))
             return NULL;
-        if (!($result = $this->statement->fetchAll(\PDO::FETCH_ASSOC)))
-            return NULL;
-        if ($htmlspecialchars)
-            foreach ($result as $key => $value)
-                foreach ($value as $column => $content)
-                    if (!is_numeric($content))
-                        $result[$key][$column] = htmlspecialchars($content);
+        if (true === $htmlspecialchars)
+            foreach ($result as $key => $record)
+                foreach ($record as $column => $content)
+                    $result[$key][$column] =
+                        is_null($content) || is_numeric($content)
+                            ? $content
+                            : htmlspecialchars($content, ENT_QUOTES);
         return $result;
     }
 
@@ -75,15 +89,15 @@ class PDOXpress extends \PDO {
      */
     public function fetchObject(bool $htmlspecialchars = false)
     {
-        if (!$this->statement)
+        if (!$this->statement || !($record = $this->statement->fetch(\PDO::FETCH_OBJ)))
             return NULL;
-        if (!($result = $this->statement->fetch(\PDO::FETCH_OBJ)))
-            return NULL;
-        if ($htmlspecialchars)
-            foreach ($result as $key => $value)
-                if (!is_numeric($value))
-                    $result->$key = htmlspecialchars($value);
-        return $result;
+        if (true === $htmlspecialchars)
+            foreach ($record as $column => $content)
+                $record->$column =
+                    is_null($content) || is_numeric($content)
+                        ? $content
+                        : htmlspecialchars($content, ENT_QUOTES);
+        return $record;
     }
 
     /**
@@ -93,15 +107,15 @@ class PDOXpress extends \PDO {
      */
     public function fetchAllObject(bool $htmlspecialchars = false)
     {
-        if (!$this->statement)
+        if (!$this->statement || !($result = $this->statement->fetchAll(\PDO::FETCH_OBJ)))
             return NULL;
-        if (!($result = $this->statement->fetchAll(\PDO::FETCH_OBJ)))
-            return NULL;
-        if ($htmlspecialchars)
-            foreach ($result as $key => $value)
-                foreach ($value as $column => $content)
-                    if (!is_numeric($content))
-                        $result[$key]->$column = htmlspecialchars($content);
+        if (true === $htmlspecialchars)
+            foreach ($result as $key => $record)
+                foreach ($record as $column => $content)
+                    $result[$key]->$column =
+                        is_null($content) || is_numeric($content)
+                            ? $content
+                            : htmlspecialchars($content, ENT_QUOTES);
         return $result;
     }
 
@@ -112,15 +126,24 @@ class PDOXpress extends \PDO {
      * @param reference &$insertId will be filled with the record id
      * @return bool true on success
      */
-    public function insert(string $table, array $data, bool $stripTags = false) : bool
+    public function insert(
+        string $table,
+        array $data,
+        bool $strip_tags = false
+    ) : bool
     {
         $sql = "";
+        $sql_columns = [];
         $params = [];
-        foreach ($data as $key => $value)
-            $params[":".$key] = $stripTags ? strip_tags($value) : $value;
-        $sql = "INSERT INTO `$table` (".implode(",", array_keys($data)).") VALUES (".implode(",", array_keys($params)).")";
+        foreach ($data as $key => $value) {
+            $params[":".$key] =
+                true === $strip_tags && !is_null($value) && !is_numeric($value)
+                    ? strip_tags($value)
+                    : $value;
+            $sql_columns[] = "`$key`";
+        }
+        $sql = "INSERT INTO `$table` (".implode(",", $sql_columns).") VALUES (".implode(",", array_keys($params)).")";
         $result = $this->query($sql, $params);
-        $insertId = $this->lastInsertId();
         return $result;
     }
 
@@ -132,13 +155,22 @@ class PDOXpress extends \PDO {
      * @param string $recordIdColumn (optional) name of the id column
      * @return bool true on success
      */
-    public function update(string $table, array $data, int $recordId, string $recordIdColumn = 'id', bool $stripTags = false) : bool
+    public function update(
+        string $table,
+        array $data,
+        int $recordId,
+        string $recordIdColumn = 'id',
+        bool $strip_tags = false
+    ) : bool
     {
         $sql = "";
         $sql_parts = [];
         $params = [];
         foreach ($data as $key => $value) {
-            $params[":".$key] = $stripTags ? strip_tags($value) : $value;
+            $params[":".$key] =
+                true === $strip_tags && !is_null($value) && !is_numeric($value)
+                    ? strip_tags($value)
+                    : $value;
             $sql_parts[] = "`$key`=:$key";
         }
         $sql = "UPDATE `$table` SET ".implode(",", $sql_parts)." WHERE `$recordIdColumn`=$recordId";
@@ -152,7 +184,11 @@ class PDOXpress extends \PDO {
      * @param string $recordIdColumn (optional) name of the id column
      * @return bool true on success
      */
-    public function delete(string $table, int $recordId, string $recordIdColumn = "id") : bool
+    public function delete(
+        string $table,
+        int $recordId,
+        string $recordIdColumn = "id"
+    ) : bool
     {
         $sql = "DELETE FROM `$table` WHERE `$recordIdColumn`=$recordId";
         return $this->query($sql);
@@ -163,9 +199,15 @@ class PDOXpress extends \PDO {
      * @param string $table table name
      * @param array $arguments (optional) column => value pair assoc array for select arguments
      * @param array $columns (optional) column names for the select
+     * @param int (optional) $attrCase the case of the column names in the result, will be reset after the query
      * @return bool true on success
      */
-    public function select(string $table, array $arguments = [], array $columns = []) : bool
+    public function select(
+        string $table,
+        array $arguments = [],
+        array $columns = [],
+        int $attrCase = \PDO::CASE_NATURAL
+    ) : bool
     {
         $sql = "";
         $params = [];
@@ -182,7 +224,7 @@ class PDOXpress extends \PDO {
             }
         else $sql_arguments[] = "1";
         $sql = "SELECT ".implode(",", $sql_columns)." FROM `$table` WHERE ".implode(" AND ", $sql_arguments);
-        return $this->query($sql, $params);
+        return $this->query($sql, $params, $attrCase);
     }
 
     /**
@@ -193,9 +235,15 @@ class PDOXpress extends \PDO {
      * @param bool (optional) $htmlspecialchars set true to encode htmlspecialchars on non numeric values
      * @return Array|NULL
      */
-    public function selectFetchAll(string $table, array $arguments = [], array $columns = [], bool $htmlspecialchars = false)
+    public function selectFetchAll(
+        string $table,
+        array $arguments = [],
+        array $columns = [],
+        int $attrCase = \PDO::CASE_NATURAL,
+        bool $htmlspecialchars = false
+    )
     {
-        $this->select($table, $arguments, $columns);
+        $this->select($table, $arguments, $columns, $attrCase);
         return $this->fetchAll($htmlspecialchars);
     }
 
@@ -207,9 +255,15 @@ class PDOXpress extends \PDO {
      * @param bool (optional) $htmlspecialchars set true to encode htmlspecialchars on non numeric values
      * @return Array|NULL
      */
-    public function selectFetchAllObject(string $table, array $arguments = [], array $columns = [], bool $htmlspecialchars = false)
+    public function selectFetchAllObject(
+        string $table,
+        array $arguments = [],
+        array $columns = [],
+        int $attrCase = \PDO::CASE_NATURAL,
+        bool $htmlspecialchars = false
+    )
     {
-        $this->select($table, $arguments, $columns);
+        $this->select($table, $arguments, $columns, $attrCase);
         return $this->fetchAllObject($htmlspecialchars);
     }
 }
