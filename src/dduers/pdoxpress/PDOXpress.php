@@ -18,7 +18,7 @@ class PDOXpress extends \PDO {
     )
     {
         parent::__construct($dsn, $username, $passwd, $options);
-        if (empty($options)) {
+        if (!count($options)) {
             $this->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
             $this->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         }
