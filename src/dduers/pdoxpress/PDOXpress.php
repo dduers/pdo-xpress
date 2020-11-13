@@ -12,8 +12,8 @@ class PDOXpress extends \PDO {
      */
     public function __construct(
         string $dsn,
-        string $username = '',
-        string $passwd = '',
+        string $username = "",
+        string $passwd = "",
         array $options = []
     )
     {
@@ -158,7 +158,7 @@ class PDOXpress extends \PDO {
         string $table,
         array $data,
         int $recordId,
-        string $recordIdColumn = 'id',
+        string $recordIdColumn = "id",
         bool $strip_tags = false
     ) : bool
     {
