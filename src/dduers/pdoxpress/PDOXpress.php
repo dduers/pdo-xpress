@@ -143,8 +143,7 @@ class PDOXpress extends \PDO {
             $sql_columns[] = "`$key`";
         }
         $sql = "INSERT INTO `$table` (".implode(",", $sql_columns).") VALUES (".implode(",", array_keys($params)).")";
-        $result = $this->query($sql, $params);
-        return $result;
+        return $this->query($sql, $params);
     }
 
     /**
