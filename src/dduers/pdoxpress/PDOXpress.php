@@ -252,7 +252,7 @@ class PDOXpress extends \PDO {
      * @param array $arguments (optional) column => value pair assoc array for select arguments
      * @param array $columns (optional) column names for the select
      * @param bool (optional) $htmlspecialchars set true to encode htmlspecialchars on non numeric values
-     * @return Array|NULL
+     * @return Object|NULL
      */
     public function selectFetchAllObject(
         string $table,
