@@ -1,7 +1,8 @@
 {
-    "name": "dduers/pdoxpress",
+    "name": "dduers/pdo-xpress",
     "description": "Extension classes for PHP's PDO class with convinience methods",
     "type": "library",
+    "keywords": ["database", "pdo", "php"],
     "homepage": "http://www.xsite.ch",
     "require": {
         "php": "^7.4"
@@ -14,5 +15,14 @@
             "role": "Developer",
             "homepage": "http://www.xsite.ch"
         }
-    ]
+    ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/dduers/pdo-express"
+        }
+    ],
+    "autoload": {
+        "psr-4": { "": "src/" }
+    }
 }

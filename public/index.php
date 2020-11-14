@@ -97,7 +97,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     <body>
         <div class="container">
             <h1>PDO Form</h1>
-            <form method="POST" action="<?= '?'.$_SERVER['QUERY_STRING'] ?>">
+            <form method="POST" action="<?= $_SERVER['PHP_SELF'].($_SERVER['QUERY_STRING'] ? '?'.$_SERVER['QUERY_STRING'] : '') ?>">
                 <label>Title</label>
                 <input name="title" required="required" value="<?= $_POST['title'] ?? '' ?>"/>
                 <label>Text</label>
@@ -109,46 +109,63 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
                     <button name="Delete" type="submit">Delete</button>
                 <?php } ?>
             </form>
-            <?php
-                echo '<table>';
-                
-                /**
-                 * EXAMPLE
-                 * use $PDOx->selectFetchAllObject 
-                 * to fetch all records at once as an array with objects with UPPERCASE property names
-                 * also, encode html special chars for display
-                 */
-                /*
-                foreach ($PDOx->selectFetchAllObject('pdo_test', [], [], PDO::CASE_UPPER, true) as $row) {
-                    echo 
-                    '<tr>'.
-                        '<td>'.$row->ID.'</td>'.
-                        '<td><a href="?id='.$row->ID.'">'.$row->TITLE.'</a></td>'.
-                        '<td>'.$row->TEXT.'</td>'.
-                        '<td>'.$row->NUMBER.'</td>'.
-                    '</tr>';
-                }
-                */
+            <table>
+                <!--
+                    EXAMPLE
+                    use $PDOx->selectFetchAllObject 
+                    to fetch all records at once as an array with objects with UPPERCASE property names
+                    also, encode html special chars for display
+                -->
+                <?php foreach ($PDOx->selectFetchAllObject('pdo_test', [], [], PDO::CASE_UPPER, true) as $row): ?>
+                    <tr>
+                        <td><?= $row->ID ?></td>
+                        <td><a href="?id=<?= $row->ID ?>"><?= $row->TITLE ?></a></td>
+                        <td><?= $row->TEXT ?></td>
+                        <td><?= $row->NUMBER ?></td>
+                    </tr>
+                <?php endforeach; ?>
+                <!--
+                    EXAMPLE
+                    use $PDOx->select / $PDOx->fetch
+                    to prepare the statement and fetch throu every record in a while loop
+                    also, encode html special chars for display
+                -->
+                <?php 
+                    $PDOx->select('pdo_test'); 
+                    while ($row = $PDOx->fetch(true)): 
+                ?>
+                    <tr>
+                        <td><?= $row['id'] ?></td>
+                        <td><a href="?id=<?= $row['id'] ?>"><?= $row['title'] ?></a></td>
+                        <td><?= $row['text'] ?></td>
+                        <td><?= $row['number'] ?></td>
+                    </tr>
+                <?php endwhile; ?>
 
-                /**
-                 * EXAMPLE
-                 * use $PDOx->select / $PDOx->fetch
-                 * to prepare the statement and fetch throu every record in a while loop
-                 * also, encode html special chars for display
-                 */
-                $PDOx->select('pdo_test');
-                while ($row = $PDOx->fetch(true)) {
-                    echo 
-                    '<tr>'.
-                        '<td>'.$row['id'].'</td>'.
-                        '<td><a href="?id='.$row['id'].'">'.$row['title'].'</a></td>'.
-                        '<td>'.$row['text'].'</td>'.
-                        '<td>'.$row['number'].'</td>'.
-                    '</tr>';
-                }
-
-                echo '</table>';
-            ?>
+                <?php
+                    /**
+                     * Transactions
+                     */
+                    $PDOx->beginTransaction();
+                    $PDOx->insert('pdo_test', [
+                        'title' => 'auto_insert1',
+                        'text' => 'auto_insert1',
+                        'number' => 111,
+                    ]);
+                    $PDOx->insert('pdo_test', [
+                        'title' => 'auto_insert2',
+                        'text' => 'auto_insert2',
+                        'number' => 222,
+                    ]);
+                    $PDOx->insert('pdo_test', [
+                        'title' => 'auto_insert3',
+                        'text' => 'auto_insert3',
+                        'number' => 333,
+                    ]);
+                    $PDOx->rollBack();
+                    //$PDOx->commit();
+                ?>
+            </table>
         </div>
     </body>
 </html>
