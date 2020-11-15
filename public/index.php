@@ -127,6 +127,10 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
                     <button name="Delete" type="submit">Delete</button>
                 <?php endif; ?>
             </form>
+            <br/>
+            <form method="POST" action="<?= $_SERVER['PHP_SELF'].($_SERVER['QUERY_STRING'] ? '?'.$_SERVER['QUERY_STRING'] : '') ?>">
+                <button name="DeleteAll" type="submit">Delete All</button>
+            </form>
             <table>
                 <!--
                     EXAMPLE
@@ -193,10 +197,6 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
                     $PDOx->commit();
                 ?>
             </table>
-
-            <form method="POST" action="<?= $_SERVER['PHP_SELF'].($_SERVER['QUERY_STRING'] ? '?'.$_SERVER['QUERY_STRING'] : '') ?>">
-                <button name="DeleteAll" type="submit">Delete All</button>
-            </form>
         </div>
     </body>
 </html>
