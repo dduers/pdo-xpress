@@ -195,11 +195,11 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
                     } catch (exception $e) {
                         $PDOx->rollBack();
                         $error = true;
+                        //echo $e->getMessage();
                     }
                     
                     if (false === $error)
                         $PDOx->commit();
-                    
                 ?>
             </table>
         </div>

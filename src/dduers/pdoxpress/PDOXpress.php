@@ -4,7 +4,7 @@ namespace Dduers\PDOXpress;
 
 class PDOXpress extends \PDO {
 
-    private ?\PDOStatement $statement;
+    private $statement;
 
     /**
      * pdo constructor
@@ -40,6 +40,8 @@ class PDOXpress extends \PDO {
         $backupAttrCase = $this->getAttribute(\PDO::ATTR_CASE);
         $this->setAttribute(\PDO::ATTR_CASE, $attrCase);
         $this->statement = $this->prepare($sql);
+        if (false === $this->statement)
+            return false;
         $result = $this->statement->execute($params);
         $this->setAttribute(\PDO::ATTR_CASE, $backupAttrCase);
         return $result;
