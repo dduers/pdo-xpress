@@ -11,7 +11,9 @@ define('DB_CONN', 'mysql:host=localhost;dbname=playground_pdo;charset=utf8mb4');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 
-// connect to the database
+/**
+ * create PDOXpress instance
+ */
 $PDOx = new \Dduers\PDOXpress\PDOXpress(DB_CONN, DB_USER, DB_PASS);
 
 /**
@@ -74,6 +76,22 @@ if (isset($_POST['Delete'])) {
 }
 
 /**
+ * delete all record
+ */
+if (isset($_POST['DeleteAll'])) {
+
+    // remove unused post values, that represent no table column name
+    unset($_POST['Delete']);
+
+    // delete record with id in table `pdo_test` 
+    $PDOx->query("DELETE FROM `pdo_test`");
+
+    // redirect, avoid resending another post on page refresh
+    header("Location: ".$_SERVER['PHP_SELF']);
+    exit();
+}
+
+/**
  * select record for edit / update
  */
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
@@ -105,9 +123,9 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
                 <label>Number</label>
                 <input name="number" type="number" required="required" value="<?= $_POST['number'] ?? '' ?>"/>
                 <button name="<?= isset($_GET['id']) && $_GET['id'] ? 'Update' : 'Create' ?>" type="submit"><?= isset($_GET['id']) && $_GET['id'] ? 'Update' : 'Create' ?></button>
-                <?php if (isset($_GET['id']) && is_numeric($_GET['id'])) { ?>
+                <?php if (isset($_GET['id']) && is_numeric($_GET['id'])): ?>
                     <button name="Delete" type="submit">Delete</button>
-                <?php } ?>
+                <?php endif; ?>
             </form>
             <table>
                 <!--
@@ -116,7 +134,13 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
                     to fetch all records at once as an array with objects with UPPERCASE property names
                     also, encode html special chars for display
                 -->
-                <?php foreach ($PDOx->selectFetchAllObject('pdo_test', [], [], PDO::CASE_UPPER, true) as $row): ?>
+                <?php 
+                    foreach (
+                        ($result = $PDOx->selectFetchAllObject('pdo_test', [], [], PDO::CASE_UPPER, true)) 
+                        ? $result 
+                        : [] 
+                    as $row): 
+                ?>
                     <tr>
                         <td><?= $row->ID ?></td>
                         <td><a href="?id=<?= $row->ID ?>"><?= $row->TITLE ?></a></td>
@@ -147,25 +171,32 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
                      * Transactions
                      */
                     $PDOx->beginTransaction();
-                    $PDOx->insert('pdo_test', [
+
+                    if (false === $PDOx->insert('pdo_test', [
                         'title' => 'auto_insert1',
                         'text' => 'auto_insert1',
                         'number' => 111,
-                    ]);
-                    $PDOx->insert('pdo_test', [
+                    ])) $PDOx->rollBack();
+
+                    if (false === $PDOx->insert('pdo_test', [
                         'title' => 'auto_insert2',
                         'text' => 'auto_insert2',
                         'number' => 222,
-                    ]);
-                    $PDOx->insert('pdo_test', [
+                    ])) $PDOx->rollBack();
+
+                    if (false === $PDOx->insert('pdo_test1', [
                         'title' => 'auto_insert3',
                         'text' => 'auto_insert3',
                         'number' => 333,
-                    ]);
-                    $PDOx->rollBack();
-                    //$PDOx->commit();
+                    ])) $PDOx->rollBack();
+                    
+                    $PDOx->commit();
                 ?>
             </table>
+
+            <form method="POST" action="<?= $_SERVER['PHP_SELF'].($_SERVER['QUERY_STRING'] ? '?'.$_SERVER['QUERY_STRING'] : '') ?>">
+                <button name="DeleteAll" type="submit">Delete All</button>
+            </form>
         </div>
     </body>
 </html>
