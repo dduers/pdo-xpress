@@ -175,26 +175,31 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
                      * Transactions
                      */
                     $PDOx->beginTransaction();
-
-                    if (false === $PDOx->insert('pdo_test', [
-                        'title' => 'auto_insert1',
-                        'text' => 'auto_insert1',
-                        'number' => 111,
-                    ])) $PDOx->rollBack();
-
-                    if (false === $PDOx->insert('pdo_test', [
-                        'title' => 'auto_insert2',
-                        'text' => 'auto_insert2',
-                        'number' => 222,
-                    ])) $PDOx->rollBack();
-
-                    if (false === $PDOx->insert('pdo_test1', [
-                        'title' => 'auto_insert3',
-                        'text' => 'auto_insert3',
-                        'number' => 333,
-                    ])) $PDOx->rollBack();
+                    $error = false;
+                    try {
+                        $PDOx->insert('pdo_test', [
+                            'title' => 'auto_insert1',
+                            'text' => 'auto_insert1',
+                            'number' => 111,
+                        ]);
+                        $PDOx->insert('pdo_test', [
+                            'title' => 'auto_insert2',
+                            'text' => 'auto_insert2',
+                            'number' => 222,
+                        ]);
+                        $PDOx->insert('pdo_test1', [
+                            'title' => 'auto_insert3',
+                            'text' => 'auto_insert3',
+                            'number' => 333,
+                        ]);
+                    } catch (exception $e) {
+                        $PDOx->rollBack();
+                        $error = true;
+                    }
                     
-                    $PDOx->commit();
+                    if (false === $error)
+                        $PDOx->commit();
+                    
                 ?>
             </table>
         </div>
