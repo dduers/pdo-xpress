@@ -11,7 +11,7 @@
     "authors": [
         {
             "name": "Daniel Duersteler",
-            "email": "daniel.duersteler@gmail.com",
+            "email": "daniel.duersteler@xsite.ch",
             "role": "Developer",
             "homepage": "http://www.xsite.ch"
         }
@@ -19,7 +19,7 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/dduers/pdo-express"
+            "url": "https://github.com/dduers/pdo-xpress"
         }
     ],
     "autoload": {
