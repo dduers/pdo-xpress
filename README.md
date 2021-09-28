@@ -1,6 +1,6 @@
 # PDOXpress
 
-## PWhat is this?
+## What is this?
 
 This is a simple class that enables convinience methods when working with
 PHP's PDO class. Note that it has it's limits, but for simple applications with
