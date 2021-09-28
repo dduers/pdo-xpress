@@ -2,8 +2,8 @@
 declare(strict_types=1);
 namespace Dduers\PDOXpress;
 
-class PDOXpress extends \PDO {
-
+class PDOXpress extends \PDO
+{
     private $statement;
 
     /**
@@ -31,7 +31,7 @@ class PDOXpress extends \PDO {
      * @param int (optional) $attrCase the case of the column names in the result, will be reset after the query
      * @return bool true on success
      */
-    public function query(
+    public function execQuery(
         string $sql,
         array $params = [],
         int $attrCase = \PDO::CASE_NATURAL
