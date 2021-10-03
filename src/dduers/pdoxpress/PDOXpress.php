@@ -145,7 +145,7 @@ class PDOXpress extends \PDO
             $sql_columns[] = "`$key`";
         }
         $sql = "INSERT INTO `$table` (".implode(",", $sql_columns).") VALUES (".implode(",", array_keys($params)).")";
-        return $this->query($sql, $params);
+        return $this->execQuery($sql, $params);
     }
 
     /**
@@ -175,7 +175,7 @@ class PDOXpress extends \PDO
             $sql_parts[] = "`$key`=:$key";
         }
         $sql = "UPDATE `$table` SET ".implode(",", $sql_parts)." WHERE `$recordIdColumn`=$recordId";
-        return $this->query($sql, $params);
+        return $this->execQuery($sql, $params);
     }
 
     /**
@@ -192,7 +192,7 @@ class PDOXpress extends \PDO
     ) : bool
     {
         $sql = "DELETE FROM `$table` WHERE `$recordIdColumn`=$recordId";
-        return $this->query($sql);
+        return $this->execQuery($sql);
     }
 
     /**
@@ -225,7 +225,7 @@ class PDOXpress extends \PDO
             }
         else $sql_arguments[] = "1";
         $sql = "SELECT ".implode(",", $sql_columns)." FROM `$table` WHERE ".implode(" AND ", $sql_arguments);
-        return $this->query($sql, $params, $attrCase);
+        return $this->execQuery($sql, $params, $attrCase);
     }
 
     /**
