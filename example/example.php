@@ -7,14 +7,14 @@ include '../src/dduers/pdoxpress/PDOXpress.php';
 /**
  * sample configuration
  */
-define('DB_CONN', 'mysql:host=localhost;dbname=playground_pdo;charset=utf8mb4');
+define('DB_DSN', 'mysql:host=localhost;dbname=pdo_playground;charset=utf8mb4');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 
 /**
  * create PDOXpress instance
  */
-$PDOx = new \Dduers\PDOXpress\PDOXpress(DB_CONN, DB_USER, DB_PASS);
+$PDOx = new \Dduers\PDOXpress\PDOXpress(DB_DSN, DB_USER, DB_PASS);
 
 /**
  * create a record
@@ -158,6 +158,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
                     to prepare the statement and fetch throu every record in a while loop
                     also, encode html special chars for display
                 -->
+                <!--
                 <?php 
                     $PDOx->select('pdo_test'); 
                     while ($row = $PDOx->fetch(true)): 
@@ -169,7 +170,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
                         <td><?= $row['number'] ?></td>
                     </tr>
                 <?php endwhile; ?>
-
+                -->
                 <?php
                     /**
                      * Transactions
@@ -192,7 +193,13 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
                             'text' => 'auto_insert3',
                             'number' => 333,
                         ]);
-                    } catch (exception $e) {
+                        // here happens error
+                        $PDOx->insert('pdo_test1', [
+                            'non_existing_column' => 'auto_insert3',
+                            'text' => 'auto_insert3',
+                            'number' => 333,
+                        ]);
+                    } catch (Exception $e) {
                         $PDOx->rollBack();
                         $error = true;
                         //echo $e->getMessage();
