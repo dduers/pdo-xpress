@@ -1,6 +1,6 @@
 {
     "name": "dduers/pdo-xpress",
-    "description": "Extension classes for PHP's PDO class with convinience methods",
+    "description": "Extension classes for PHP's PDO class with convinience methods and datamodel class",
     "type": "library",
     "keywords": ["database", "pdo", "php"],
     "homepage": "http://www.xsite.ch",

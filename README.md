@@ -4,7 +4,7 @@
 
 This is a simple class that enables convinience methods when working with
 PHP's PDO class. Note that it has it's limits, but for simple applications with
-no requirement of ORM or related concepts, it does it's job.
+requirement of very simple ORM, it does it's job.
 
 ## Features
 

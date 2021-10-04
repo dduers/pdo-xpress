@@ -1,8 +1,10 @@
 <?php
 /**
- * library include
+ * include library classes
  */
-include '../src/dduers/pdoxpress/PDOXpress.php';
+include '../src/dduers/pdoxpress/PDOXpressConnection.php';
+include '../src/dduers/pdoxpress/PDOXpressDataModel.php';
+include '../src/dduers/pdoxpress/PDOXpressException.php';
 
 /**
  * sample configuration
@@ -12,9 +14,14 @@ define('DB_USER', 'root');
 define('DB_PASS', '');
 
 /**
- * create PDOXpress instance
+ * create PDOXpressConnection instance
  */
-$PDOx = new \Dduers\PDOXpress\PDOXpress(DB_DSN, DB_USER, DB_PASS);
+$PDOXpressConnection = new \Dduers\PDOXpress\PDOXpressConnection(DB_DSN, DB_USER, DB_PASS);
+
+/**
+ * create PDOXpressDataModel with mapped table 'pdo_test'
+ */
+$PDOXpressDataModel = new \Dduers\PDOXpress\PDOXpressDataModel($PDOXpressConnection, 'pdo_test');
 
 /**
  * create a record
@@ -25,10 +32,10 @@ if (isset($_POST['Create'])) {
     unset($_POST['Create']);
 
     // insert to table `pdo_test`
-    $PDOx->insert('pdo_test', $_POST, true);
+    $PDOXpressDataModel->insert($_POST, true);
 
     // get the id of the inserted record
-    $recordId = $PDOx->lastInsertId();
+    $recordId = $PDOXpressConnection->lastInsertId();
 
     // redirect, avoid resending another post on page refresh
     header("Location: ".$_SERVER['PHP_SELF']);
@@ -47,7 +54,7 @@ if (isset($_POST['Update'])) {
         unset($_POST['Update']);
 
         // update record with id in table `pdo_test` 
-        $PDOx->update('pdo_test', $_POST, $_GET['id'], 'id', false);
+        $PDOXpressDataModel->update($_POST, $_GET['id'], 'id', false);
     }
 
     // redirect, avoid resending another post on page refresh
@@ -67,7 +74,7 @@ if (isset($_POST['Delete'])) {
         unset($_POST['Delete']);
 
         // delete record with id in table `pdo_test` 
-        $PDOx->delete('pdo_test', $_GET['id']);
+        $PDOXpressDataModel->delete($_GET['id']);
     }
 
     // redirect, avoid resending another post on page refresh
@@ -84,7 +91,7 @@ if (isset($_POST['DeleteAll'])) {
     unset($_POST['Delete']);
 
     // delete record with id in table `pdo_test` 
-    $PDOx->query("DELETE FROM `pdo_test`");
+    $PDOXpressConnection->execQuery("DELETE FROM `pdo_test`");
 
     // redirect, avoid resending another post on page refresh
     header("Location: ".$_SERVER['PHP_SELF']);
@@ -97,10 +104,10 @@ if (isset($_POST['DeleteAll'])) {
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
 
     // select the record from table `pdo_test` 
-    $PDOx->select('pdo_test', ['id' => $_GET['id']]);
+    $PDOXpressDataModel->select(['id' => $_GET['id']]);
 
     // set to post var
-    $_POST = $PDOx->fetch(true);
+    $_POST = $PDOXpressConnection->fetch(true);
 }
 
 // render your page template ...
@@ -134,13 +141,13 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
             <table>
                 <!--
                     EXAMPLE
-                    use $PDOx->selectFetchAllObject 
+                    use $PDOXpressConnection->selectFetchAllObject 
                     to fetch all records at once as an array with objects with UPPERCASE property names
                     also, encode html special chars for display
                 -->
                 <?php 
                     foreach (
-                        ($result = $PDOx->selectFetchAllObject('pdo_test', [], [], PDO::CASE_UPPER, true)) 
+                        ($result = $PDOXpressDataModel->selectFetchAllObject([], [], PDO::CASE_UPPER, true)) 
                         ? $result 
                         : [] 
                     as $row): 
@@ -154,14 +161,14 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
                 <?php endforeach; ?>
                 <!--
                     EXAMPLE
-                    use $PDOx->select / $PDOx->fetch
+                    use $PDOXpressConnection->select / $PDOXpressConnection->fetch
                     to prepare the statement and fetch throu every record in a while loop
                     also, encode html special chars for display
                 -->
                 <!--
                 <?php 
-                    $PDOx->select('pdo_test'); 
-                    while ($row = $PDOx->fetch(true)): 
+                    $PDOXpressDataModel->select(); 
+                    while ($row = $PDOXpressConnection->fetch(true)): 
                 ?>
                     <tr>
                         <td><?= $row['id'] ?></td>
@@ -171,42 +178,43 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
                     </tr>
                 <?php endwhile; ?>
                 -->
+
                 <?php
                     /**
                      * Transactions
                      */
-                    $PDOx->beginTransaction();
+                    $PDOXpressConnection->beginTransaction();
                     $error = false;
                     try {
-                        $PDOx->insert('pdo_test', [
+                        $PDOXpressDataModel->insert([
                             'title' => 'auto_insert1',
                             'text' => 'auto_insert1',
                             'number' => 111,
                         ]);
-                        $PDOx->insert('pdo_test', [
+                        $PDOXpressDataModel->insert([
                             'title' => 'auto_insert2',
                             'text' => 'auto_insert2',
                             'number' => 222,
                         ]);
-                        $PDOx->insert('pdo_test1', [
+                        $PDOXpressDataModel->insert([
                             'title' => 'auto_insert3',
                             'text' => 'auto_insert3',
                             'number' => 333,
                         ]);
-                        // here happens error
-                        $PDOx->insert('pdo_test1', [
+                        // error within transaction happens here
+                        $PDOXpressDataModel->insert([
                             'non_existing_column' => 'auto_insert3',
                             'text' => 'auto_insert3',
                             'number' => 333,
                         ]);
                     } catch (Exception $e) {
-                        $PDOx->rollBack();
+                        $PDOXpressConnection->rollBack();
                         $error = true;
                         //echo $e->getMessage();
                     }
                     
                     if (false === $error)
-                        $PDOx->commit();
+                        $PDOXpressConnection->commit();
                 ?>
             </table>
         </div>
