@@ -2,7 +2,12 @@
 declare(strict_types=1);
 namespace Dduers\PDOXpress;
 
-class PDOXpressConnection extends \PDO
+use PDO;
+
+/**
+ * pdo-xpress connection class
+ */
+class PDOXpressConnection extends PDO
 {
     /**
      * the pdo statement
@@ -22,8 +27,8 @@ class PDOXpressConnection extends \PDO
     {
         parent::__construct($dsn, $username, $passwd, $options);
         if (!count($options)) {
-            $this->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
-            $this->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+            $this->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+            $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         }
     }
 
@@ -33,7 +38,7 @@ class PDOXpressConnection extends \PDO
      */
     public function getDriverName(): string
     {
-        return $this->getAttribute(\PDO::ATTR_DRIVER_NAME);
+        return $this->getAttribute(PDO::ATTR_DRIVER_NAME);
     }
 
     /**
@@ -46,16 +51,16 @@ class PDOXpressConnection extends \PDO
     public function execQuery(
         string $sql,
         array $params = [],
-        int $attrCase = \PDO::CASE_NATURAL
+        int $attrCase = PDO::CASE_NATURAL
     ) : bool
     {
-        $backupAttrCase = $this->getAttribute(\PDO::ATTR_CASE);
-        $this->setAttribute(\PDO::ATTR_CASE, $attrCase);
+        $backupAttrCase = $this->getAttribute(PDO::ATTR_CASE);
+        $this->setAttribute(PDO::ATTR_CASE, $attrCase);
         $this->statement = $this->prepare($sql);
         if (false === $this->statement)
             return false;
         $result = $this->statement->execute($params);
-        $this->setAttribute(\PDO::ATTR_CASE, $backupAttrCase);
+        $this->setAttribute(PDO::ATTR_CASE, $backupAttrCase);
         return $result;
     }
 
@@ -66,7 +71,7 @@ class PDOXpressConnection extends \PDO
      */
     public function fetch(bool $htmlspecialchars = false)
     {
-        if (!$this->statement || !($record = $this->statement->fetch(\PDO::FETCH_ASSOC)))
+        if (!$this->statement || !($record = $this->statement->fetch(PDO::FETCH_ASSOC)))
             return NULL;
         if (true === $htmlspecialchars)
             foreach ($record as $column => $content)
@@ -84,7 +89,7 @@ class PDOXpressConnection extends \PDO
      */
     public function fetchAll(bool $htmlspecialchars = false)
     {
-        if (!$this->statement || !($result = $this->statement->fetchAll(\PDO::FETCH_ASSOC)))
+        if (!$this->statement || !($result = $this->statement->fetchAll(PDO::FETCH_ASSOC)))
             return NULL;
         if (true === $htmlspecialchars)
             foreach ($result as $key => $record)
@@ -103,7 +108,7 @@ class PDOXpressConnection extends \PDO
      */
     public function fetchObject(bool $htmlspecialchars = false)
     {
-        if (!$this->statement || !($record = $this->statement->fetch(\PDO::FETCH_OBJ)))
+        if (!$this->statement || !($record = $this->statement->fetch(PDO::FETCH_OBJ)))
             return NULL;
         if (true === $htmlspecialchars)
             foreach ($record as $column => $content)
@@ -121,7 +126,7 @@ class PDOXpressConnection extends \PDO
      */
     public function fetchAllObject(bool $htmlspecialchars = false)
     {
-        if (!$this->statement || !($result = $this->statement->fetchAll(\PDO::FETCH_OBJ)))
+        if (!$this->statement || !($result = $this->statement->fetchAll(PDO::FETCH_OBJ)))
             return NULL;
         if (true === $htmlspecialchars)
             foreach ($result as $key => $record)

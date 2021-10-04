@@ -2,12 +2,28 @@
 declare(strict_types=1);
 namespace Dduers\PDOXpress;
 
+use PDO;
+
+/**
+ * pdo-xpress datamodel class
+ */
 class PDOXpressDataModel extends PDOXpressConnection
 {
+    /**
+     * the pdo-xpress connection class
+     */
     private PDOXpressConnection $connection;
 
+    /**
+     * name of mapped table
+     */
     private string $table;
 
+    /**
+     * class constructor
+     * @param PDOXpressConnection $connection instance of pdo-xpress connection class
+     * @param string $table name of table to map
+     */
     function __construct(PDOXpressConnection $connection, string $table)
     {
         $this->connection = $connection;
@@ -25,7 +41,7 @@ class PDOXpressDataModel extends PDOXpressConnection
     public function select(
         array $arguments = [],
         array $columns = [],
-        int $attrCase = \PDO::CASE_NATURAL
+        int $attrCase = PDO::CASE_NATURAL
     ) : bool
     {
         $sql = "";
@@ -125,7 +141,7 @@ class PDOXpressDataModel extends PDOXpressConnection
     public function selectFetchAll(
         array $arguments = [],
         array $columns = [],
-        int $attrCase = \PDO::CASE_NATURAL,
+        int $attrCase = PDO::CASE_NATURAL,
         bool $htmlspecialchars = false
     )
     {
@@ -143,7 +159,7 @@ class PDOXpressDataModel extends PDOXpressConnection
     public function selectFetchAllObject(
         array $arguments = [],
         array $columns = [],
-        int $attrCase = \PDO::CASE_NATURAL,
+        int $attrCase = PDO::CASE_NATURAL,
         bool $htmlspecialchars = false
     )
     {

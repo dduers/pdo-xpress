@@ -5,114 +5,93 @@
 include '../src/dduers/pdoxpress/PDOXpressConnection.php';
 include '../src/dduers/pdoxpress/PDOXpressDataModel.php';
 include '../src/dduers/pdoxpress/PDOXpressException.php';
-
 /**
  * sample configuration
  */
-define('DB_DSN', 'mysql:host=localhost;dbname=pdo_playground;charset=utf8mb4');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-
+$database_driver = 'mysql';
+$database_server = 'localhost';
+$database_name = 'pdo_playground';
+$database_charset = 'utf8mb4';
+$database_dsn = "$database_driver:host=$database_server;dbname=$database_name;charset=$database_charset";
+$database_user = 'root';
+$database_password = '';
 /**
  * create PDOXpressConnection instance
  */
-$PDOXpressConnection = new \Dduers\PDOXpress\PDOXpressConnection(DB_DSN, DB_USER, DB_PASS);
-
+$PDOXpressConnection = new \Dduers\PDOXpress\PDOXpressConnection($database_dsn, $database_user, $database_password);
 /**
  * create PDOXpressDataModel with mapped table 'pdo_test'
  */
 $PDOXpressDataModel = new \Dduers\PDOXpress\PDOXpressDataModel($PDOXpressConnection, 'pdo_test');
-
 /**
  * create a record
  */
 if (isset($_POST['Create'])) {
-
     // remove unused post values, that represent no table column name
     unset($_POST['Create']);
-
     // insert to table `pdo_test`
     $PDOXpressDataModel->insert($_POST, true);
-
     // get the id of the inserted record
     $recordId = $PDOXpressConnection->lastInsertId();
-
     // redirect, avoid resending another post on page refresh
     header("Location: ".$_SERVER['PHP_SELF']);
     exit();
 }
-
 /**
  * update a record
  */
 if (isset($_POST['Update'])) {
-
     // do id parameter validation
     if (isset($_GET['id']) && is_numeric($_GET['id'])) {
-
         // remove unused post values, that represent no table column name
         unset($_POST['Update']);
-
         // update record with id in table `pdo_test` 
         $PDOXpressDataModel->update($_POST, $_GET['id'], 'id', false);
     }
-
     // redirect, avoid resending another post on page refresh
     header("Location: ".$_SERVER['PHP_SELF']);
     exit();
 }
-
 /**
  * delete a record
  */
 if (isset($_POST['Delete'])) {
-
     // do id parameter validation
     if (isset($_GET['id']) && is_numeric($_GET['id'])) {
-
         // remove unused post values, that represent no table column name
         unset($_POST['Delete']);
-
         // delete record with id in table `pdo_test` 
         $PDOXpressDataModel->delete($_GET['id']);
     }
-
     // redirect, avoid resending another post on page refresh
     header("Location: ".$_SERVER['PHP_SELF']);
     exit();
 }
-
 /**
  * delete all record
  */
 if (isset($_POST['DeleteAll'])) {
-
     // remove unused post values, that represent no table column name
     unset($_POST['Delete']);
-
     // delete record with id in table `pdo_test` 
     $PDOXpressConnection->execQuery("DELETE FROM `pdo_test`");
-
     // redirect, avoid resending another post on page refresh
     header("Location: ".$_SERVER['PHP_SELF']);
     exit();
 }
-
 /**
  * select record for edit / update
  */
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
-
     // select the record from table `pdo_test` 
     $PDOXpressDataModel->select(['id' => $_GET['id']]);
-
     // set to post var
     $_POST = $PDOXpressConnection->fetch(true);
 }
-
-// render your page template ...
+/** 
+ * render your page template ...
+ **/
 ?>
-
 <!DOCTYPE html>
 <html>
     <head>
@@ -141,7 +120,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
             <table>
                 <!--
                     EXAMPLE
-                    use $PDOXpressConnection->selectFetchAllObject 
+                    use $PDOXpressDataModel->selectFetchAllObject 
                     to fetch all records at once as an array with objects with UPPERCASE property names
                     also, encode html special chars for display
                 -->
@@ -161,7 +140,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
                 <?php endforeach; ?>
                 <!--
                     EXAMPLE
-                    use $PDOXpressConnection->select / $PDOXpressConnection->fetch
+                    use $PDOXpressDataModel->select / $PDOXpressConnection->fetch
                     to prepare the statement and fetch throu every record in a while loop
                     also, encode html special chars for display
                 -->
@@ -178,7 +157,6 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
                     </tr>
                 <?php endwhile; ?>
                 -->
-
                 <?php
                     /**
                      * Transactions
@@ -212,7 +190,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
                         $error = true;
                         //echo $e->getMessage();
                     }
-                    
+                    // commit transaction when no error
                     if (false === $error)
                         $PDOXpressConnection->commit();
                 ?>

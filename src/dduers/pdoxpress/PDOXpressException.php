@@ -2,12 +2,13 @@
 declare(strict_types=1);
 namespace Dduers\PDOXpress;
 
+use Exception;
 use Throwable;
 
 /**
  * pdo-xpress exceptions
  */
-class PDOXpressException extends \Exception
+class PDOXpressException extends Exception
 {
     public const CANNOT_UPDATE_TABLE_WITHOUT_PRIMARY_KEY = 'CANNOT_UPDATE_TABLE_WITHOUT_PRIMARY_KEY';
     public const CANNOT_DELETE_RECORD_FROM_TABLE_WITHOUT_PRIMARY_KEY = 'CANNOT_DELETE_RECORD_FROM_TABLE_WITHOUT_PRIMARY_KEY';

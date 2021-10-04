@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
+## 2.0.1
+
+- added example mysql database
+- code and documentation cleanup
+
 ## 2.0.0
 
 - Split up connection and datamodel classes
