@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file, in reverse 
 - fixed namespace case issues
 - added PHP8 support
 - updated code documentation
-- some small performance improvements
+- some small performance improvements 
 
 ## 2.0.1
 
