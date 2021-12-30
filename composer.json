@@ -19,6 +19,6 @@
         "url": "https://github.com/dduers/pdo-xpress"
     }],
     "autoload": {
-        "psr-4": { "": "src/" }
+        "psr-4": { "Dduers\\PDOXpress\\": "src/" }
     }
 }

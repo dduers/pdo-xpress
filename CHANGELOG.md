@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file, in reverse 
 ## 3.0.0
 
 - [BREAKING] New default values for parameters (increased security)
+- fixed namespace case issues
 - added PHP8 support
 - updated code documentation
 - some small performance improvements
