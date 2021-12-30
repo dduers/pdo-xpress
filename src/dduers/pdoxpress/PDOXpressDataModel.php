@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace Dduers\PDOXpress;
 
 use PDO;
@@ -10,12 +12,12 @@ use PDO;
 class PDOXpressDataModel extends PDOXpressConnection
 {
     /**
-     * the pdo-xpress connection class
+     * pdo-xpress connection
      */
     private PDOXpressConnection $connection;
 
     /**
-     * name of mapped table
+     * mapped table
      */
     private string $table;
 
@@ -32,7 +34,6 @@ class PDOXpressDataModel extends PDOXpressConnection
 
     /**
      * select one or more records from a table
-     * @param string $table table name
      * @param array $arguments (optional) column => value pair assoc array for select arguments
      * @param array $columns (optional) column names for the select
      * @param int (optional) $attrCase the case of the column names in the result, will be reset after the query
@@ -42,23 +43,22 @@ class PDOXpressDataModel extends PDOXpressConnection
         array $arguments = [],
         array $columns = [],
         int $attrCase = PDO::CASE_NATURAL
-    ) : bool
-    {
+    ): bool {
         $sql = "";
         $params = [];
         $sql_columns = [];
         $sql_arguments = [];
         if ($columns)
-            foreach($columns as $column)
+            foreach ($columns as $column)
                 $sql_columns[] = "`$column`";
         else $sql_columns[] = "*";
         if ($arguments)
-            foreach($arguments as $column => $value) {
-                $params[":".$column] = $value;
+            foreach ($arguments as $column => $value) {
+                $params[":" . $column] = $value;
                 $sql_arguments[] = "`$column`=:$column";
             }
         else $sql_arguments[] = "1";
-        $sql = "SELECT ".implode(",", $sql_columns)." FROM `$this->table` WHERE ".implode(" AND ", $sql_arguments);
+        $sql = "SELECT " . implode(",", $sql_columns) . " FROM `$this->table` WHERE " . implode(" AND ", $sql_arguments);
         return $this->connection->execQuery($sql, $params, $attrCase);
     }
 
@@ -70,20 +70,19 @@ class PDOXpressDataModel extends PDOXpressConnection
      */
     public function insert(
         array $data,
-        bool $strip_tags = false
-    ) : bool
-    {
+        bool $strip_tags = true
+    ): bool {
         $sql = "";
         $sql_columns = [];
         $params = [];
         foreach ($data as $key => $value) {
-            $params[":".$key] =
-                true === $strip_tags && !is_null($value) && !is_numeric($value)
-                    ? strip_tags($value)
-                    : $value;
+            $params[":" . $key] =
+                true === $strip_tags && is_string($value)
+                ? strip_tags($value)
+                : $value;
             $sql_columns[] = "`$key`";
         }
-        $sql = "INSERT INTO `$this->table` (".implode(",", $sql_columns).") VALUES (".implode(",", array_keys($params)).")";
+        $sql = "INSERT INTO `$this->table` (" . implode(",", $sql_columns) . ") VALUES (" . implode(",", array_keys($params)) . ")";
         return $this->connection->execQuery($sql, $params);
     }
 
@@ -97,22 +96,21 @@ class PDOXpressDataModel extends PDOXpressConnection
     public function update(
         array $data,
         int $recordId,
-        bool $strip_tags = false
-    ) : bool
-    {
+        bool $strip_tags = true
+    ): bool {
         if (!$recordIdColumn = $this->getPrimaryKeyColumnName())
             throw new PDOXpressException(PDOXpressException::CANNOT_UPDATE_TABLE_WITHOUT_PRIMARY_KEY);
         $sql = "";
         $sql_parts = [];
         $params = [];
         foreach ($data as $key => $value) {
-            $params[":".$key] =
-                true === $strip_tags && !is_null($value) && !is_numeric($value)
-                    ? strip_tags($value)
-                    : $value;
+            $params[":" . $key] =
+                true === $strip_tags && is_string($value)
+                ? strip_tags($value)
+                : $value;
             $sql_parts[] = "`$key`=:$key";
         }
-        $sql = "UPDATE `$this->table` SET ".implode(",", $sql_parts)." WHERE `$recordIdColumn`=$recordId";
+        $sql = "UPDATE `$this->table` SET " . implode(",", $sql_parts) . " WHERE `$recordIdColumn`=$recordId";
         return $this->connection->execQuery($sql, $params);
     }
 
@@ -123,8 +121,7 @@ class PDOXpressDataModel extends PDOXpressConnection
      */
     public function delete(
         int $recordId
-    ) : bool
-    {
+    ): bool {
         if (!$recordIdColumn = $this->getPrimaryKeyColumnName())
             throw new PDOXpressException(PDOXpressException::CANNOT_DELETE_RECORD_FROM_TABLE_WITHOUT_PRIMARY_KEY);
         $sql = "DELETE FROM `$this->table` WHERE `$recordIdColumn`=$recordId";
@@ -135,16 +132,16 @@ class PDOXpressDataModel extends PDOXpressConnection
      * select one or more records from a table and directly fetch to assoc array
      * @param array $arguments (optional) column => value pair assoc array for select arguments
      * @param array $columns (optional) column names for the select
-     * @param bool (optional) $htmlspecialchars set true to encode htmlspecialchars on non numeric values
+     * @param int $attrCase (optional) case of resulting array keys
+     * @param bool $htmlspecialchars (optional) set true to encode htmlspecialchars on non numeric values
      * @return Array|NULL
      */
     public function selectFetchAll(
         array $arguments = [],
         array $columns = [],
         int $attrCase = PDO::CASE_NATURAL,
-        bool $htmlspecialchars = false
-    )
-    {
+        bool $htmlspecialchars = true
+    ) {
         $this->select($arguments, $columns, $attrCase);
         return $this->connection->fetchAll($htmlspecialchars);
     }
@@ -160,9 +157,8 @@ class PDOXpressDataModel extends PDOXpressConnection
         array $arguments = [],
         array $columns = [],
         int $attrCase = PDO::CASE_NATURAL,
-        bool $htmlspecialchars = false
-    )
-    {
+        bool $htmlspecialchars = true
+    ) {
         $this->select($arguments, $columns, $attrCase);
         return $this->connection->fetchAllObject($htmlspecialchars);
     }
@@ -184,6 +180,5 @@ class PDOXpressDataModel extends PDOXpressConnection
                 throw new PDOXpressException(PDOXpressException::DATABASE_DRIVER_NOT_SUPPORTED_BY_PDOXPRESS);
                 break;
         }
-        
     }
 }

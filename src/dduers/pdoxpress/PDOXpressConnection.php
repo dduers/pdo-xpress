@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace Dduers\PDOXpress;
 
 use PDO;
@@ -23,8 +25,7 @@ class PDOXpressConnection extends PDO
         string $username = "",
         string $passwd = "",
         array $options = []
-    )
-    {
+    ) {
         parent::__construct($dsn, $username, $passwd, $options);
         if (!count($options)) {
             $this->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
@@ -52,8 +53,7 @@ class PDOXpressConnection extends PDO
         string $sql,
         array $params = [],
         int $attrCase = PDO::CASE_NATURAL
-    ) : bool
-    {
+    ): bool {
         $backupAttrCase = $this->getAttribute(PDO::ATTR_CASE);
         $this->setAttribute(PDO::ATTR_CASE, $attrCase);
         $this->statement = $this->prepare($sql);
@@ -69,7 +69,7 @@ class PDOXpressConnection extends PDO
      * @param bool (optional) $htmlspecialchars set true to encode htmlspecialchars on non numeric values
      * @return Array|NULL
      */
-    public function fetch(bool $htmlspecialchars = false)
+    public function fetch(bool $htmlspecialchars = true)
     {
         if (!$this->statement || !($record = $this->statement->fetch(PDO::FETCH_ASSOC)))
             return NULL;
@@ -77,8 +77,8 @@ class PDOXpressConnection extends PDO
             foreach ($record as $column => $content)
                 $record[$column] =
                     is_null($content) || is_numeric($content)
-                        ? $content
-                        : htmlspecialchars($content, ENT_QUOTES);
+                    ? $content
+                    : htmlspecialchars($content, ENT_QUOTES);
         return $record;
     }
 
@@ -87,7 +87,7 @@ class PDOXpressConnection extends PDO
      * @param bool (optional) $htmlspecialchars set true to encode htmlspecialchars on non numeric values
      * @return Array|NULL
      */
-    public function fetchAll(bool $htmlspecialchars = false)
+    public function fetchAll(bool $htmlspecialchars = true)
     {
         if (!$this->statement || !($result = $this->statement->fetchAll(PDO::FETCH_ASSOC)))
             return NULL;
@@ -96,8 +96,8 @@ class PDOXpressConnection extends PDO
                 foreach ($record as $column => $content)
                     $result[$key][$column] =
                         is_null($content) || is_numeric($content)
-                            ? $content
-                            : htmlspecialchars($content, ENT_QUOTES);
+                        ? $content
+                        : htmlspecialchars($content, ENT_QUOTES);
         return $result;
     }
 
@@ -106,7 +106,7 @@ class PDOXpressConnection extends PDO
      * @param bool (optional) $htmlspecialchars set true to encode htmlspecialchars on non numeric values
      * @return Object|NULL
      */
-    public function fetchObject(bool $htmlspecialchars = false)
+    public function fetchObject(bool $htmlspecialchars = true)
     {
         if (!$this->statement || !($record = $this->statement->fetch(PDO::FETCH_OBJ)))
             return NULL;
@@ -114,8 +114,8 @@ class PDOXpressConnection extends PDO
             foreach ($record as $column => $content)
                 $record->$column =
                     is_null($content) || is_numeric($content)
-                        ? $content
-                        : htmlspecialchars($content, ENT_QUOTES);
+                    ? $content
+                    : htmlspecialchars($content, ENT_QUOTES);
         return $record;
     }
 
@@ -124,7 +124,7 @@ class PDOXpressConnection extends PDO
      * @param bool (optional) $htmlspecialchars set true to encode htmlspecialchars on non numeric values
      * @return Object|NULL
      */
-    public function fetchAllObject(bool $htmlspecialchars = false)
+    public function fetchAllObject(bool $htmlspecialchars = true)
     {
         if (!$this->statement || !($result = $this->statement->fetchAll(PDO::FETCH_OBJ)))
             return NULL;
@@ -133,8 +133,8 @@ class PDOXpressConnection extends PDO
                 foreach ($record as $column => $content)
                     $result[$key]->$column =
                         is_null($content) || is_numeric($content)
-                            ? $content
-                            : htmlspecialchars($content, ENT_QUOTES);
+                        ? $content
+                        : htmlspecialchars($content, ENT_QUOTES);
         return $result;
     }
 }

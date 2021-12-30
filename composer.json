@@ -3,25 +3,21 @@
     "description": "Extension classes for PHP's PDO class with convinience methods and datamodel class",
     "type": "library",
     "keywords": ["database", "pdo", "php"],
-    "homepage": "http://www.xsite.ch",
+    "homepage": "https://github.com/dduers/pdo-xpress",
     "require": {
-        "php": "^7.4"
+        "php": ">=7.4"
     },
     "license": "MIT",
-    "authors": [
-        {
-            "name": "Daniel Duersteler",
-            "email": "daniel.duersteler@xsite.ch",
-            "role": "Developer",
-            "homepage": "http://www.xsite.ch"
-        }
-    ],
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/dduers/pdo-xpress"
-        }
-    ],
+    "authors": [{
+        "name": "Daniel Duersteler",
+        "email": "daniel.duersteler@gmail.com",
+        "role": "Developer",
+        "homepage": "http://www.xsite.ch"
+    }],
+    "repositories": [{
+        "type": "vcs",
+        "url": "https://github.com/dduers/pdo-xpress"
+    }],
     "autoload": {
         "psr-4": { "": "src/" }
     }
